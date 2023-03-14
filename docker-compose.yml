@@ -1,0 +1,48 @@
+version: "3.10"
+
+services:
+  web:
+    build: .
+    command: >
+       bash -c "python manage.py migrate &&
+         python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DJANGO_SETTINGS_MODULE: VoteProject.settings
+    depends_on:
+      - db
+      - rabbitmq
+      - worker
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+
+    ports:
+      - "5432:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+
+  worker:
+    build: .
+    environment:
+      DJANGO_SETTINGS_MODULE: VoteProject.settings
+    command: celery -A vote worker -B -l INFO
+    volumes:
+      - .:/code
+    depends_on:
+      - rabbitmq
+      - db
+
+
+volumes:
+  db_data:
