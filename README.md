@@ -4,7 +4,7 @@
 
 Use docker compose in the project directory to start the service.
 ```
-docker-compose run --service-ports web.
+docker-compose up
 ```
 
 Then, when all services are running and all migrations have been made, create a user.
