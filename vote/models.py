@@ -14,6 +14,9 @@ class Votes(models.Model):
     def __str__(self):
         return self.votingname
 
+    class Meta:
+        verbose_name_plural= 'Голоса'
+
 
 
 
