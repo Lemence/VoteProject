@@ -1,16 +1,14 @@
 import zipfile
 import openpyxl
 import psycopg2
-from celery import shared_task, Task
+from celery import shared_task
 from urllib import request
-from celery.schedules import crontab
 import os
-import shutil
-
-
+from django.db import transaction
 
 
 @shared_task()
+@transaction.atomic
 def migrate_votes():
     from vote.models import Votes
     Votes.objects.all().delete()
@@ -21,14 +19,14 @@ def migrate_votes():
     request.urlretrieve(url, filename)
 
     with zipfile.ZipFile('vote/download/votes.zip', "r") as zip_ref:
-        zip_ref.extractall('.')
+        zip_ref.extractall('vote/download/')
 
     conn = psycopg2.connect(database='postgres', user='postgres', password='postgres', host='db', port='5432')
     cursor = conn.cursor()
     extension = ".xlsx"
-    for filename in os.listdir("."):
+    for filename in os.listdir("vote/download"):
         if filename.endswith(extension):
-            workbook = openpyxl.load_workbook(filename)
+            workbook = openpyxl.load_workbook(f"vote/download/{filename}")
             worksheet = workbook.active
 
             for row in worksheet.iter_rows():
