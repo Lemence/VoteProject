@@ -7,6 +7,7 @@ from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 from django.apps import apps
 
+
 @receiver(post_migrate)
 def first_migrate(sender, **kwargs):
     Votes = apps.get_model('vote', 'Votes')  # импортируем модель Votes уже после загрузки приложения
@@ -32,9 +33,11 @@ def first_migrate(sender, **kwargs):
                 data = []
                 for cell in row:
                     data.append(cell.value)
-                cursor.execute(
-                    'INSERT INTO vote_votes (global_id, votingname, linktoresults, votingname_en, linktoresults_en) VALUES (%s, %s, %s, %s, %s)',
-                    data)
+                Votes.objects.create(global_id=data[0],
+                                     votingname=data[1],
+                                     linktoresults=data[2],
+                                     votingname_en=data[3],
+                                     linktoresults_en=data[4])
 
     conn.commit()
     cursor.close()

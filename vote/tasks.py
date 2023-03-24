@@ -33,7 +33,11 @@ def migrate_votes():
                 data = []
                 for cell in row:
                     data.append(cell.value)
-                cursor.execute('INSERT INTO vote_votes (global_id, votingname, linktoresults, votingname_en, linktoresults_en) VALUES (%s, %s, %s, %s, %s)', data)
+                Votes.objects.create(global_id=data[0],
+                                     votingname=data[1],
+                                     linktoresults=data[2],
+                                     votingname_en=data[3],
+                                     linktoresults_en=data[4])
 
     conn.commit()
     cursor.close()
