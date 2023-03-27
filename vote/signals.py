@@ -29,15 +29,18 @@ def first_migrate(sender, **kwargs):
             workbook = openpyxl.load_workbook(f"vote/download/{filename}")
             worksheet = workbook.active
 
-            for row in worksheet.iter_rows():  # Заливаем данные с файла
+            for row in worksheet.iter_rows(): # Заливаем данные с файла
                 data = []
                 for cell in row:
                     data.append(cell.value)
-                Votes.objects.create(global_id=data[0],
-                                     votingname=data[1],
-                                     linktoresults=data[2],
-                                     votingname_en=data[3],
-                                     linktoresults_en=data[4])
+                if data[0] == 'global_id':
+                    pass
+                else:
+                    Votes.objects.create(global_id=data[0],
+                                         votingname=data[1],
+                                         linktoresults=data[2],
+                                         votingname_en=data[3],
+                                         linktoresults_en=data[4])
 
     conn.commit()
     cursor.close()
