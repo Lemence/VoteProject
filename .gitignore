@@ -9,6 +9,7 @@ media
 .idea/**/dictionaries
 .idea/**/shelf
 .idea/**/contentModel.xml
+.idea/dictionaries
 celerybeat-schedule
 .env
 .venv
@@ -17,3 +18,4 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+README.md
