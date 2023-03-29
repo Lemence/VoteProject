@@ -6,11 +6,11 @@ from urllib import request
 import os
 from django.db import transaction
 from django.apps import apps
+from .models import Votes
 
 @shared_task()
 @transaction.atomic
 def migrate_votes():
-    Votes = apps.get_model('vote', 'Votes') # импортируем модель Votes уже после загрузки приложения
     Votes.objects.all().delete()
 
     url = "https://op.mos.ru/EHDWSREST/catalog/export/get?id=1494876" # Скачиваем архиф с данными
@@ -21,8 +21,6 @@ def migrate_votes():
     with zipfile.ZipFile('vote/download/votes.zip', "r") as zip_ref: # Разорхивируем
         zip_ref.extractall('vote/download/')
 
-    conn = psycopg2.connect(database='postgres', user='postgres', password='postgres', host='db', port='5432')
-    cursor = conn.cursor()
     extension = ".xlsx"
     for filename in os.listdir("vote/download"): # Делим файл
         if filename.endswith(extension):
@@ -41,10 +39,6 @@ def migrate_votes():
                                          linktoresults=data[2],
                                          votingname_en=data[3],
                                          linktoresults_en=data[4])
-
-    conn.commit()
-    cursor.close()
-    conn.close()
 
 
     folder_path = 'vote/download' # Очистка папки от ненужных файлов
